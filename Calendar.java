@@ -1,12 +1,18 @@
 package project4;
 
 import java.time.LocalDateTime;
+
+import com.sun.rowset.internal.Row;
 import javafx.application.Application;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 
@@ -18,7 +24,7 @@ public class Calendar extends Application
    private Scene scene;
 
    private HBox topBox = new HBox();
-   
+   private String[] firstLetters = { "S", "M", "T", "W", "T", "F", "S" };
    //Use this stage if you decide to complete the extra credit
    /*
    private Stage appointmentStage = new Stage();
@@ -51,12 +57,13 @@ public class Calendar extends Application
     
    public void setupTopPane()
    {
-      //TO BE COMPLETED AS REQUIRED IN THE INSTRUCTIONS
-      topBox.setPadding(new Insets(10));
+      topBox.setPadding(new Insets(15));
       topBox.setSpacing(10);
 
       Text currentMonth = new Text(date.getMonth() + "");
+      currentMonth.setFont(new Font(20));
       Text currentYear = new Text(date.getYear() + "");
+      currentYear.setFont(new Font(20));
       Region topSpacer = new Region();
 
       HBox nav = new HBox();
@@ -79,7 +86,42 @@ public class Calendar extends Application
    {
       GridPane monthPane = new GridPane();
       //TO BE COMPLETED AS REQUIRED IN THE INSTRUCTIONS
-        
+      monthPane.setGridLinesVisible(true);
+//      monthPane.setPadding(new Insets(5,5,20,5));
+      monthPane.setAlignment(Pos.TOP_CENTER);
+      for(int i = 0; i < 7; i++)
+      {
+         ColumnConstraints col = new ColumnConstraints();
+         col.setPercentWidth(100/7);
+         monthPane.getColumnConstraints().add(col);
+
+         if(i == 0)
+            monthPane.getRowConstraints().add(new RowConstraints(40));
+         else
+         {
+            RowConstraints row = new RowConstraints();
+            row.setPercentHeight(100/7);
+            monthPane.getRowConstraints().add(row);
+         }
+
+      }
+      for(int i = 0; i < 6; i++)
+      {
+
+      }
+      for(int col = 0; col < 7; col++)
+      {
+         for(int row = 0; row < 6; row++)
+         {
+            if(row == 0)
+            {
+               Text text = new Text(firstLetters[col]);
+               text.setTextAlignment(TextAlignment.CENTER);
+               monthPane.add(text, col, row);
+               monthPane.setHalignment(text, HPos.CENTER);
+            }
+         }
+      }
         
         
       return monthPane;
