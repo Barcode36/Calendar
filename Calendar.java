@@ -23,6 +23,7 @@ public class Calendar extends Application
 {
    private BorderPane containerPane = new BorderPane();
    private LocalDateTime date = LocalDateTime.now();
+   private YearMonth yearMonthView = YearMonth.from(date);
    private String appointmentFile = "src/project4/appointmentFile.csv";
    private Scene scene;
 
@@ -78,6 +79,36 @@ public class Calendar extends Application
       todayBtn.setMinWidth(70);
       nav.getChildren().addAll(backBtn,yearBtn,todayBtn,forwardBtn);
       nav.setSpacing(5);
+
+      backBtn.setOnAction(event -> {
+         yearMonthView = yearMonthView.minusMonths(1);
+         currentMonth.setText(yearMonthView.getMonth() + "");
+         currentYear.setText(yearMonthView.getYear() + "");
+         GridPane previousPane = setupMonthPane(yearMonthView.getYear(),yearMonthView.getMonthValue());
+         containerPane.setCenter(previousPane);
+      });
+
+      forwardBtn.setOnAction(event -> {
+         yearMonthView = yearMonthView.plusMonths(1);
+         currentMonth.setText(yearMonthView.getMonth() + "");
+         currentYear.setText(yearMonthView.getYear() + "");
+         GridPane nextPane = setupMonthPane(yearMonthView.getYear(),yearMonthView.getMonthValue());
+         containerPane.setCenter(nextPane);
+      });
+
+      yearBtn.setOnAction(event -> {
+         currentMonth.setText("");
+         currentYear.setText(yearMonthView.getYear() + "");
+
+      });
+
+      todayBtn.setOnAction(event -> {
+         yearMonthView = yearMonthView.from(date);
+         currentMonth.setText(date.getMonth() + "");
+         currentYear.setText(date.getYear() + "");
+         GridPane todayPane = setupMonthPane(yearMonthView.getYear(),yearMonthView.getMonthValue());
+         containerPane.setCenter(todayPane);
+      });
 
       topBox.getChildren().addAll(currentMonth,currentYear,topSpacer,nav);
       topBox.setHgrow(topSpacer, Priority.ALWAYS);
@@ -135,63 +166,56 @@ public class Calendar extends Application
    public void fillUpMonth(GridPane monthGP, int yearValue, int monthValue)
    {
       YearMonth yearMonth = YearMonth.of(yearValue,monthValue);
+      YearMonth preMonth = yearMonth.minusMonths(1);
       DayOfWeek firstDayOfWeek = yearMonth.atDay(1).getDayOfWeek();
 
-      YearMonth preMonth = yearMonth.minusMonths(1);
-
+      int currentMonthDay = 1;
+      int nextMonthDays = 1;
       int preMonthDays = 0;
       if (!firstDayOfWeek.equals(DayOfWeek.SUNDAY))
       {
-         preMonthDays = preMonth.lengthOfMonth() - firstDayOfWeek.getValue();
+         preMonthDays = firstDayOfWeek.getValue();
       }
-
-      int days = yearMonth.lengthOfMonth();
-      int count = 1;
-      int nextMonthDays = 1;
 
       for(int row = 1; row < 7; row++)
       {
          for(int col = 0; col < 7; col++)
          {
-            if(preMonthDays != preMonth.lengthOfMonth())
+            if(preMonthDays == 0 && currentMonthDay <= yearMonth.lengthOfMonth())
             {
-               preMonthDays++;
-               Text text = new Text(preMonthDays + "");
-               text.setTextAlignment(TextAlignment.CENTER);
-               text.setFill(Color.GREY);
-               monthGP.add(text, col, row);
-               monthGP.setHalignment(text, HPos.CENTER);
-
-            }
-            else if(count <= days ) {
-
-               if (count == date.getDayOfMonth())
+               StackPane sp = new StackPane();
+               Text currentDate = new Text(currentMonthDay + "");
+               if(currentMonthDay == date.getDayOfMonth() &&
+                       (yearMonth.getYear() == date.getYear()) &&
+                       (yearMonthView.getMonthValue() == date.getMonthValue()))
                {
-                  StackPane sp = new StackPane();
-                  Circle circle = new Circle(20, Color.RED);
-                  Text currentDate = new Text(count + "");
                   currentDate.setFill(Color.WHITE);
+                  Circle circle = new Circle(20, Color.RED);
                   sp.getChildren().addAll(circle, currentDate);
-                  monthGP.add(sp, col, row);
-                  count++;
                }
                else
                {
-                  Text text = new Text(count + "");
-                  text.setTextAlignment(TextAlignment.CENTER);
-                  monthGP.add(text, col, row);
-                  monthGP.setHalignment(text, HPos.CENTER);
-                  count++;
+                  sp.getChildren().add(currentDate);
                }
-
+               monthGP.add(sp, col, row);
+               currentMonthDay++;
+            }
+            else if(preMonthDays > 0)
+            {
+               preMonthDays--;
+               StackPane sp = new StackPane();
+               Text prevDate = new Text(preMonth.lengthOfMonth()- preMonthDays + "");
+               prevDate.setFill(Color.GREY);
+               sp.getChildren().add(prevDate);
+               monthGP.add(sp, col, row);
             }
             else
             {
-               Text text = new Text(nextMonthDays + "");
-               text.setTextAlignment(TextAlignment.CENTER);
-               text.setFill(Color.GREY);
-               monthGP.add(text, col, row);
-               monthGP.setHalignment(text, HPos.CENTER);
+               StackPane sp = new StackPane();
+               Text nextDate = new Text(nextMonthDays + "");
+               nextDate.setFill(Color.GREY);
+               sp.getChildren().add(nextDate);
+               monthGP.add(sp, col, row);
                nextMonthDays++;
             }
          }
@@ -202,8 +226,20 @@ public class Calendar extends Application
    {
       GridPane twelve = new GridPane();
       //TO BE COMPLETED AS REQUIRED IN THE INSTRUCTIONS
-        
-        
+
+      for(int i = 0; i < 3; i++)
+      {
+         RowConstraints row = new RowConstraints();
+         row.setPercentHeight(100/3);
+         twelve.getRowConstraints().add(row);
+      }
+      for(int col = 0; col < 4; col++)
+      {
+         ColumnConstraints column = new ColumnConstraints();
+         column.setPercentWidth(100/4);
+         twelve.getColumnConstraints().add(column);
+      }
+
         
         
       return twelve;
