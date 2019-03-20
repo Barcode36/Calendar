@@ -1,6 +1,9 @@
 package project4;
 
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.YearMonth;
+import java.time.temporal.TemporalField;
 
 import com.sun.rowset.internal.Row;
 import javafx.application.Application;
@@ -85,9 +88,11 @@ public class Calendar extends Application
    public GridPane setupMonthPane(int yearValue, int monthValue)
    {
       GridPane monthPane = new GridPane();
-      //TO BE COMPLETED AS REQUIRED IN THE INSTRUCTIONS
+
+
+
+      // Setting up the initial grid with visible lines
       monthPane.setGridLinesVisible(true);
-//      monthPane.setPadding(new Insets(5,5,20,5));
       monthPane.setAlignment(Pos.TOP_CENTER);
       for(int i = 0; i < 7; i++)
       {
@@ -105,13 +110,11 @@ public class Calendar extends Application
          }
 
       }
-      for(int i = 0; i < 6; i++)
-      {
 
-      }
+      // Setting up the top row of the grid for days of the week
       for(int col = 0; col < 7; col++)
       {
-         for(int row = 0; row < 6; row++)
+         for(int row = 0; row < 7; row++)
          {
             if(row == 0)
             {
@@ -120,17 +123,46 @@ public class Calendar extends Application
                monthPane.add(text, col, row);
                monthPane.setHalignment(text, HPos.CENTER);
             }
+//            else
+//            {
+//               Text text = new Text("Testing");
+//               text.setTextAlignment(TextAlignment.CENTER);
+//               monthPane.add(text, col, row);
+//               monthPane.setHalignment(text, HPos.CENTER);
+//            }
          }
       }
-        
+
+      // At this point I need to call the next method to fill up the gridpane
+        fillUpMonth(monthPane, yearValue, monthValue);
         
       return monthPane;
    }
    
    public void fillUpMonth(GridPane monthGP, int yearValue, int monthValue)
    {
-      //TO BE COMPLETED AS REQUIRED IN THE INSTRUCTIONS
-        
+      YearMonth yearMonth = YearMonth.of(yearValue,monthValue);
+
+        Month x = date.getMonth();
+        int days = x.length(yearMonth.isLeapYear());
+        int count = 1;
+
+      for(int row = 0; row < 7; row++)
+      {
+         for(int col = 0; col < 7; col++)
+         {
+            if(count <= days && row != 0) {
+               Text text = new Text(count + "");
+               text.setTextAlignment(TextAlignment.CENTER);
+               monthGP.add(text, col, row);
+               monthGP.setHalignment(text, HPos.CENTER);
+               count++;
+            }
+            System.out.println(row + " " + col);
+
+         }
+      }
+
         
         
    }
