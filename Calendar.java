@@ -1,11 +1,8 @@
 package project4;
 
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.YearMonth;
-import java.time.temporal.TemporalField;
+import java.time.*;
 
-import com.sun.rowset.internal.Row;
+
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -13,10 +10,13 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+
 
 
 public class Calendar extends Application
@@ -123,13 +123,6 @@ public class Calendar extends Application
                monthPane.add(text, col, row);
                monthPane.setHalignment(text, HPos.CENTER);
             }
-//            else
-//            {
-//               Text text = new Text("Testing");
-//               text.setTextAlignment(TextAlignment.CENTER);
-//               monthPane.add(text, col, row);
-//               monthPane.setHalignment(text, HPos.CENTER);
-//            }
          }
       }
 
@@ -142,29 +135,67 @@ public class Calendar extends Application
    public void fillUpMonth(GridPane monthGP, int yearValue, int monthValue)
    {
       YearMonth yearMonth = YearMonth.of(yearValue,monthValue);
+      DayOfWeek firstDayOfWeek = yearMonth.atDay(1).getDayOfWeek();
 
-        Month x = date.getMonth();
-        int days = x.length(yearMonth.isLeapYear());
-        int count = 1;
+      YearMonth preMonth = yearMonth.minusMonths(1);
 
-      for(int row = 0; row < 7; row++)
+      int preMonthDays = 0;
+      if (!firstDayOfWeek.equals(DayOfWeek.SUNDAY))
+      {
+         preMonthDays = preMonth.lengthOfMonth() - firstDayOfWeek.getValue();
+      }
+
+      int days = yearMonth.lengthOfMonth();
+      int count = 1;
+      int nextMonthDays = 1;
+
+      for(int row = 1; row < 7; row++)
       {
          for(int col = 0; col < 7; col++)
          {
-            if(count <= days && row != 0) {
-               Text text = new Text(count + "");
+            if(preMonthDays != preMonth.lengthOfMonth())
+            {
+               preMonthDays++;
+               Text text = new Text(preMonthDays + "");
                text.setTextAlignment(TextAlignment.CENTER);
+               text.setFill(Color.GREY);
                monthGP.add(text, col, row);
                monthGP.setHalignment(text, HPos.CENTER);
-               count++;
-            }
-            System.out.println(row + " " + col);
 
+            }
+            else if(count <= days ) {
+
+               if (count == date.getDayOfMonth())
+               {
+                  StackPane sp = new StackPane();
+                  Circle circle = new Circle(20, Color.RED);
+                  Text currentDate = new Text(count + "");
+                  currentDate.setFill(Color.WHITE);
+                  sp.getChildren().addAll(circle, currentDate);
+                  monthGP.add(sp, col, row);
+                  count++;
+               }
+               else
+               {
+                  Text text = new Text(count + "");
+                  text.setTextAlignment(TextAlignment.CENTER);
+                  monthGP.add(text, col, row);
+                  monthGP.setHalignment(text, HPos.CENTER);
+                  count++;
+               }
+
+            }
+            else
+            {
+               Text text = new Text(nextMonthDays + "");
+               text.setTextAlignment(TextAlignment.CENTER);
+               text.setFill(Color.GREY);
+               monthGP.add(text, col, row);
+               monthGP.setHalignment(text, HPos.CENTER);
+               nextMonthDays++;
+            }
          }
       }
-
-        
-        
    }
     
    public GridPane twelveMonthsPane()
