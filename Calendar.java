@@ -29,6 +29,7 @@ public class Calendar extends Application
 
    private HBox topBox = new HBox();
    private String[] firstLetters = { "S", "M", "T", "W", "T", "F", "S" };
+   private Month[] months = Month.values();
    //Use this stage if you decide to complete the extra credit
    /*
    private Stage appointmentStage = new Stage();
@@ -84,7 +85,8 @@ public class Calendar extends Application
          yearMonthView = yearMonthView.minusMonths(1);
          currentMonth.setText(yearMonthView.getMonth() + "");
          currentYear.setText(yearMonthView.getYear() + "");
-         GridPane previousPane = setupMonthPane(yearMonthView.getYear(),yearMonthView.getMonthValue());
+         GridPane previousPane = setupMonthPane(yearMonthView.getYear(),
+                 yearMonthView.getMonthValue());
          containerPane.setCenter(previousPane);
       });
 
@@ -92,21 +94,25 @@ public class Calendar extends Application
          yearMonthView = yearMonthView.plusMonths(1);
          currentMonth.setText(yearMonthView.getMonth() + "");
          currentYear.setText(yearMonthView.getYear() + "");
-         GridPane nextPane = setupMonthPane(yearMonthView.getYear(),yearMonthView.getMonthValue());
+         GridPane nextPane = setupMonthPane(yearMonthView.getYear(),
+                 yearMonthView.getMonthValue());
          containerPane.setCenter(nextPane);
       });
 
       yearBtn.setOnAction(event -> {
          currentMonth.setText("");
          currentYear.setText(yearMonthView.getYear() + "");
-
+         yearMonthView = YearMonth.from(date);
+         GridPane yearView = twelveMonthsPane();
+         containerPane.setCenter(yearView);
       });
 
       todayBtn.setOnAction(event -> {
          yearMonthView = yearMonthView.from(date);
          currentMonth.setText(date.getMonth() + "");
          currentYear.setText(date.getYear() + "");
-         GridPane todayPane = setupMonthPane(yearMonthView.getYear(),yearMonthView.getMonthValue());
+         GridPane todayPane = setupMonthPane(yearMonthView.getYear(),
+                 yearMonthView.getMonthValue());
          containerPane.setCenter(todayPane);
       });
 
@@ -187,10 +193,10 @@ public class Calendar extends Application
                Text currentDate = new Text(currentMonthDay + "");
                if(currentMonthDay == date.getDayOfMonth() &&
                        (yearMonth.getYear() == date.getYear()) &&
-                       (yearMonthView.getMonthValue() == date.getMonthValue()))
+                       (yearMonth.getMonthValue() == date.getMonthValue()))
                {
                   currentDate.setFill(Color.WHITE);
-                  Circle circle = new Circle(20, Color.RED);
+                  Circle circle = new Circle(15, Color.RED);
                   sp.getChildren().addAll(circle, currentDate);
                }
                else
@@ -225,27 +231,44 @@ public class Calendar extends Application
    public GridPane twelveMonthsPane()
    {
       GridPane twelve = new GridPane();
-      //TO BE COMPLETED AS REQUIRED IN THE INSTRUCTIONS
+      twelve.setHgap(10);
+      twelve.setVgap(10);
+      twelve.setAlignment(Pos.CENTER);
 
-      for(int i = 0; i < 3; i++)
+      for(int i = 0; i < 4; i++)
       {
-         RowConstraints row = new RowConstraints();
-         row.setPercentHeight(100/3);
-         twelve.getRowConstraints().add(row);
-      }
-      for(int col = 0; col < 4; col++)
-      {
-         ColumnConstraints column = new ColumnConstraints();
-         column.setPercentWidth(100/4);
-         twelve.getColumnConstraints().add(column);
+         if(i < 3) {
+            RowConstraints row = new RowConstraints();
+            row.setPercentHeight((800 - topBox.getHeight()) / 3);
+            twelve.getRowConstraints().add(row);
+         }
+         ColumnConstraints col = new ColumnConstraints();
+         col.setPercentWidth(100/4);
+         twelve.getColumnConstraints().add(col);
+
       }
 
-        
-        
+      int monthCount = 0;
+      for (int row = 0; row < 3; row++)
+      {
+         for(int col = 0; col < 4; col++)
+         {
+            VBox vbox = new VBox();
+            Text text = new Text(months[monthCount].name());
+            text.setTextAlignment(TextAlignment.CENTER);
+            vbox.setAlignment(Pos.CENTER);
+            GridPane monthPane = setupMonthPane(yearMonthView.getYear(),
+                    months[monthCount].getValue());
+            monthPane.setGridLinesVisible(false);
+            monthPane.setHgap(2);
+            monthPane.setVgap(2);
+            vbox.getChildren().addAll(text, monthPane);
+            twelve.add(vbox, col, row);
+            monthCount++;
+         }
+      }
       return twelve;
    }
-   
-   
    
    //The following is for the extra credit
     
