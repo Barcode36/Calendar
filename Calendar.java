@@ -1,14 +1,19 @@
 package project4;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.*;
-
+import java.util.*;
 
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -30,10 +35,14 @@ public class Calendar extends Application
    private HBox topBox = new HBox();
    private String[] firstLetters = { "S", "M", "T", "W", "T", "F", "S" };
    private Month[] months = Month.values();
-   //Use this stage if you decide to complete the extra credit
-   /*
+
    private Stage appointmentStage = new Stage();
-   */
+   private  Scene appointmentScene;
+   private GridPane appointmentPane = new GridPane();
+
+   private int appointmentYear = 0;
+   private int appointmentMonth = 0;
+   private int appointmentDay = 0;
 
    @Override
    public void start(Stage primaryStage)
@@ -49,15 +58,14 @@ public class Calendar extends Application
       primaryStage.setMinHeight(800);
       primaryStage.setScene(scene);
       primaryStage.show();
+
         
         
-      //Use the following if you decide to complete the extra credit
-      /*
+
       appointmentScene = new Scene(appointmentPane, 350, 250);
       setupAppointmentPane();
       appointmentStage.setTitle("Add Event");
       appointmentStage.setScene(appointmentScene);
-      */
    }
     
    public void setupTopPane()
@@ -118,19 +126,15 @@ public class Calendar extends Application
 
       topBox.getChildren().addAll(currentMonth,currentYear,topSpacer,nav);
       topBox.setHgrow(topSpacer, Priority.ALWAYS);
-   
       containerPane.setTop(topBox);
    }
    
    public GridPane setupMonthPane(int yearValue, int monthValue)
    {
       GridPane monthPane = new GridPane();
-
-
-
-      // Setting up the initial grid with visible lines
       monthPane.setGridLinesVisible(true);
       monthPane.setAlignment(Pos.TOP_CENTER);
+
       for(int i = 0; i < 7; i++)
       {
          ColumnConstraints col = new ColumnConstraints();
@@ -145,10 +149,8 @@ public class Calendar extends Application
             row.setPercentHeight(100/7);
             monthPane.getRowConstraints().add(row);
          }
-
       }
 
-      // Setting up the top row of the grid for days of the week
       for(int col = 0; col < 7; col++)
       {
          for(int row = 0; row < 7; row++)
@@ -163,9 +165,8 @@ public class Calendar extends Application
          }
       }
 
-      // At this point I need to call the next method to fill up the gridpane
-        fillUpMonth(monthPane, yearValue, monthValue);
-        
+      fillUpMonth(monthPane, yearValue, monthValue);
+      displayAppointments(monthPane);
       return monthPane;
    }
    
@@ -187,9 +188,12 @@ public class Calendar extends Application
       {
          for(int col = 0; col < 7; col++)
          {
+            VBox vbox = new VBox();
+            vbox.setAlignment(Pos.CENTER);
+            StackPane sp = new StackPane();
             if(preMonthDays == 0 && currentMonthDay <= yearMonth.lengthOfMonth())
             {
-               StackPane sp = new StackPane();
+
                Text currentDate = new Text(currentMonthDay + "");
                if(currentMonthDay == date.getDayOfMonth() &&
                        (yearMonth.getYear() == date.getYear()) &&
@@ -203,27 +207,40 @@ public class Calendar extends Application
                {
                   sp.getChildren().add(currentDate);
                }
-               monthGP.add(sp, col, row);
                currentMonthDay++;
+
+               // Listener for a specific day!
+               currentDate.setOnMouseClicked(event -> {
+                  if(event.getClickCount() == 2)
+                  {
+                     Object temp = event.getSource();
+
+                     Text test = (Text)temp;
+                     appointmentDay = Integer.parseInt(test.getText());
+                     appointmentMonth = yearMonthView.getMonthValue();
+                     appointmentYear = yearMonthView.getYear();
+                     appointmentStage.show();
+                  }
+               });
+
             }
             else if(preMonthDays > 0)
             {
                preMonthDays--;
-               StackPane sp = new StackPane();
                Text prevDate = new Text(preMonth.lengthOfMonth()- preMonthDays + "");
                prevDate.setFill(Color.GREY);
                sp.getChildren().add(prevDate);
-               monthGP.add(sp, col, row);
+
             }
             else
             {
-               StackPane sp = new StackPane();
                Text nextDate = new Text(nextMonthDays + "");
                nextDate.setFill(Color.GREY);
                sp.getChildren().add(nextDate);
-               monthGP.add(sp, col, row);
                nextMonthDays++;
             }
+            vbox.getChildren().add(sp);
+            monthGP.add(vbox, col, row);
          }
       }
    }
@@ -274,17 +291,128 @@ public class Calendar extends Application
     
    public void setupAppointmentPane()
    {
-        //TO BE COMPLETED AS REQUIRED IN THE INSTRUCTIONS
-        
-        
-        
-        
+      Label title = new Label("Title: ");
+      TextField titleField = new TextField();
+      titleField.setPrefColumnCount(2);
+      Label time = new Label("Time: ");
+
+      ComboBox<String> comboHour = new ComboBox<>();
+      Text currentHour = new Text(date.getHour() +"");
+      comboHour.setPlaceholder(currentHour);
+
+
+      for(int i = 0; i < 24; i++)
+      {
+         comboHour.getItems().add(i + "");
+      }
+
+      ComboBox<Integer> comboMinute = new ComboBox<>();
+      for(int i = 0; i < 60; i++)
+      {
+         comboMinute.getItems().add(i);
+      }
+
+      Button clear = new Button("Clear");
+      Button submit = new Button("Submit");
+
+
+      // First Row
+      appointmentPane.add(title, 0, 0);
+      appointmentPane.add(titleField,1, 0,
+              2,1);
+      // Second Row
+      appointmentPane.add(time,0,1);
+      appointmentPane.add(comboHour, 1,1);
+      appointmentPane.add(comboMinute, 2,1);
+      // Third Row
+      appointmentPane.add(clear, 1,2);
+      appointmentPane.add(submit, 2,2);
+      // GridPane properties
+      appointmentPane.setHgap(10);
+      appointmentPane.setVgap(10);
+      appointmentPane.setPadding(new Insets(10));
+      appointmentPane.setAlignment(Pos.CENTER);
+
+      submit.setOnAction(event -> {
+
+         int hour = Integer.parseInt(comboHour.getValue());
+         int minute = comboMinute.getValue();
+
+         storeAppointment(titleField.getText(), appointmentYear, appointmentMonth,
+                           appointmentDay, hour, minute);
+
+         appointmentStage.close();
+         GridPane gp = setupMonthPane(yearMonthView.getYear(), yearMonthView.getMonthValue());
+         containerPane.setCenter(gp);
+
+
+      });
    }
     
    public void displayAppointments(GridPane monthPane)
    {
-      //TO BE COMPLETED AS REQUIRED IN THE INSTRUCTIONS
+      try(Scanner input = new Scanner(new File(appointmentFile))) {
 
+         while (input.hasNextLine())
+         {
+            String[] arr = input.nextLine().split(",");
+
+            String appTitle = arr[0];
+            int year = Integer.parseInt(arr[1]);
+            int month = Integer.valueOf(arr[2]);
+            int day = Integer.parseInt(arr[3]);
+            int hour = Integer.parseInt(arr[4]);
+            int minute = Integer.parseInt(arr[5]);
+
+            if(year == yearMonthView.getYear() && month == yearMonthView.getMonthValue())
+            {
+               System.out.println(year);
+               System.out.println(yearMonthView.getYear());
+               System.out.println(month);
+               System.out.println(yearMonthView.getMonthValue());
+               System.out.println();
+               List list = monthPane.getChildren();
+               Iterator<Node> iterator = list.listIterator();
+
+               while (iterator.hasNext())
+               {
+                  Node node = iterator.next();
+                  if(node instanceof VBox)
+                  {
+                     List vBoxList = ((VBox) node).getChildren();
+                     Iterator<Node> vBoxIterator = vBoxList.listIterator();
+
+                     while (vBoxIterator.hasNext())
+                     {
+                        Node vBoxNode = vBoxIterator.next();
+                        if (vBoxNode instanceof StackPane)
+                        {
+                           StackPane sp = (StackPane)vBoxNode;
+
+                           for( Node spNode: sp.getChildren())
+                           {
+                              if(spNode instanceof Text)
+                              {
+                                 Text tempText = (Text) spNode;
+                                 int temp = Integer.parseInt(tempText.getText());
+                                 if(temp == day && tempText.getFill() == Color.BLACK)
+                                 {
+                                    Text text1 = new Text(hour + ":" + minute + " " + appTitle);
+                                    text1.setFill(Color.GREEN);
+                                    ((ListIterator<Node>) vBoxIterator).add(text1);
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+      catch (FileNotFoundException e) {
+         e.printStackTrace();
+      }
 
 
    }
@@ -298,10 +426,26 @@ public class Calendar extends Application
    }
 
     
-   public void storeAppointment(StackPane sp)
-   {   
-      //TO BE COMPLETED AS REQUIRED IN THE INSTRUCTIONS
-    
+   public void storeAppointment(String title, int year, int month, int day, int hour, int minute)
+   {
+      try(FileWriter fileWriter = new FileWriter(appointmentFile, true)) {
+
+         fileWriter.write(title + ",");
+         fileWriter.write(year + ",");
+         fileWriter.write(month + ",");
+         fileWriter.write(day + ",");
+         fileWriter.write(hour + ",");
+         fileWriter.write(minute + "\n");
+
+      }
+      catch(FileNotFoundException e) {
+         System.out.println("File not Found!");
+         e.printStackTrace();
+      }
+      catch (IOException e) {
+         System.out.println("IOException!");
+         e.printStackTrace();
+      }
    }
 
    /**
