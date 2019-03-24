@@ -397,9 +397,11 @@ public class Calendar extends Application
                                  int temp = Integer.parseInt(tempText.getText());
                                  if(temp == day && tempText.getFill() == Color.BLACK)
                                  {
-                                    Text text1 = new Text(hour + ":" + minute + " " + appTitle);
-                                    text1.setFill(Color.GREEN);
-                                    ((ListIterator<Node>) vBoxIterator).add(text1);
+                                    Label label1 = new Label(hour + ":" + minute + " " + appTitle);
+                                    label1.setStyle("-fx-text-fill: green");
+                                    label1.setWrapText(true);
+                                    label1.setTextAlignment(TextAlignment.CENTER);
+                                    ((ListIterator<Node>) vBoxIterator).add(label1);
                                  }
                               }
                            }
