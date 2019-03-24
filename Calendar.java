@@ -364,6 +364,7 @@ public class Calendar extends Application
          appointmentStage.close();
          GridPane gp = setupMonthPane(yearMonthView.getYear(), yearMonthView.getMonthValue());
          containerPane.setCenter(gp);
+         titleField.clear();
       });
       clear.setOnAction(event -> {
          clear(titleField, comboHour, comboMinute);
@@ -387,11 +388,6 @@ public class Calendar extends Application
 
             if(year == yearMonthView.getYear() && month == yearMonthView.getMonthValue())
             {
-               System.out.println(year);
-               System.out.println(yearMonthView.getYear());
-               System.out.println(month);
-               System.out.println(yearMonthView.getMonthValue());
-               System.out.println();
                List list = monthPane.getChildren();
                Iterator<Node> iterator = list.listIterator();
 
