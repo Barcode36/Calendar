@@ -8,6 +8,8 @@ import java.time.*;
 import java.util.*;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -43,6 +45,7 @@ public class Calendar extends Application
    private int appointmentYear = 0;
    private int appointmentMonth = 0;
    private int appointmentDay = 0;
+   private boolean appointmentVisible = true;
 
    @Override
    public void start(Stage primaryStage)
@@ -95,6 +98,7 @@ public class Calendar extends Application
          currentYear.setText(yearMonthView.getYear() + "");
          GridPane previousPane = setupMonthPane(yearMonthView.getYear(),
                  yearMonthView.getMonthValue());
+         displayAppointments(previousPane);
          containerPane.setCenter(previousPane);
       });
 
@@ -104,6 +108,7 @@ public class Calendar extends Application
          currentYear.setText(yearMonthView.getYear() + "");
          GridPane nextPane = setupMonthPane(yearMonthView.getYear(),
                  yearMonthView.getMonthValue());
+         displayAppointments(nextPane);
          containerPane.setCenter(nextPane);
       });
 
@@ -111,8 +116,10 @@ public class Calendar extends Application
          currentMonth.setText("");
          currentYear.setText(yearMonthView.getYear() + "");
          yearMonthView = YearMonth.from(date);
+         appointmentVisible = false;
          GridPane yearView = twelveMonthsPane();
          containerPane.setCenter(yearView);
+         appointmentVisible = true;
       });
 
       todayBtn.setOnAction(event -> {
@@ -121,6 +128,7 @@ public class Calendar extends Application
          currentYear.setText(date.getYear() + "");
          GridPane todayPane = setupMonthPane(yearMonthView.getYear(),
                  yearMonthView.getMonthValue());
+         displayAppointments(todayPane);
          containerPane.setCenter(todayPane);
       });
 
@@ -166,7 +174,11 @@ public class Calendar extends Application
       }
 
       fillUpMonth(monthPane, yearValue, monthValue);
-      displayAppointments(monthPane);
+      if(appointmentVisible)
+      {
+         displayAppointments(monthPane);
+      }
+
       return monthPane;
    }
    
@@ -296,21 +308,29 @@ public class Calendar extends Application
       titleField.setPrefColumnCount(2);
       Label time = new Label("Time: ");
 
-      ComboBox<String> comboHour = new ComboBox<>();
-      Text currentHour = new Text(date.getHour() +"");
-      comboHour.setPlaceholder(currentHour);
+      String[] hourArray = {"00","01","02","03","04","05","06",
+                           "07","08","09","10","11","12","13",
+                           "14","15","16","17","18","19","20",
+                           "21","22","23"};
 
+      String[] minutes = {"00","01","02","03","04","05","06",
+                          "07","08","09","10","11","12","13",
+                          "14","15","16","17","18","19","20",
+                          "21","22","23","24","25","26","27",
+                          "28","29","30","31","32","33","33",
+                          "34","35","36","37","38","39","40",
+                          "41","42","43","44","45","46","47",
+                          "48","49","50","51","52","53","54",
+                          "55","56","57","58","59","60"};
 
-      for(int i = 0; i < 24; i++)
-      {
-         comboHour.getItems().add(i + "");
-      }
+      LocalTime comboTime = LocalTime.now();
+      ObservableList<String> hourList = FXCollections.observableArrayList(hourArray);
+      ComboBox<String> comboHour = new ComboBox<>(hourList);
+      comboHour.getSelectionModel().select(comboTime.getHour()+"");
 
-      ComboBox<Integer> comboMinute = new ComboBox<>();
-      for(int i = 0; i < 60; i++)
-      {
-         comboMinute.getItems().add(i);
-      }
+      ObservableList<String> minuteList = FXCollections.observableArrayList(minutes);
+      ComboBox<String> comboMinute = new ComboBox<>(minuteList);
+      comboMinute.getSelectionModel().select(comboTime.getMinute()+"");
 
       Button clear = new Button("Clear");
       Button submit = new Button("Submit");
@@ -336,7 +356,7 @@ public class Calendar extends Application
       submit.setOnAction(event -> {
 
          int hour = Integer.parseInt(comboHour.getValue());
-         int minute = comboMinute.getValue();
+         int minute =  Integer.parseInt(comboMinute.getValue());
 
          storeAppointment(titleField.getText(), appointmentYear, appointmentMonth,
                            appointmentDay, hour, minute);
@@ -344,8 +364,9 @@ public class Calendar extends Application
          appointmentStage.close();
          GridPane gp = setupMonthPane(yearMonthView.getYear(), yearMonthView.getMonthValue());
          containerPane.setCenter(gp);
-
-
+      });
+      clear.setOnAction(event -> {
+         clear(titleField, comboHour, comboMinute);
       });
    }
     
@@ -419,12 +440,12 @@ public class Calendar extends Application
 
    }
 
-   public void clear()
+   public void clear(TextField title, ComboBox hour, ComboBox minute)
    {
-      //TO BE COMPLETED AS REQUIRED IN THE INSTRUCTIONS
-      
-      
-      
+      title.clear();
+      LocalTime comboTime = LocalTime.now();
+      hour.getSelectionModel().select(comboTime.getHour()+"");
+      minute.getSelectionModel().select(comboTime.getMinute()+"");
    }
 
     
