@@ -8,3 +8,6 @@ The initial view when starting the app is the current month view based on your l
 Appointments can be made while viewing any single month and double clicking on a date within the current month. This then prompts a pop up to display allowing you to set a title for your appointment and also set a time for the appointment.
 
 ## Screenshots
+
+![alt text](https://github.com/Ericnunez/Calendar/blob/master/monthview.png?raw=true "month view screenshot")
+
