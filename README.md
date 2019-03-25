@@ -20,6 +20,9 @@ Appointments can be made while viewing any single month and double clicking on a
 * [Java]
 * [JavaFX] - GUI
 
-## Authors
+## Author
 
 * **Eric Nunez** - *Initial work* -
+
+## Future Plans
+I plan to connect the program with a databse in order to make it more complete and secure. I havent decided on the database yet, if you have any suggetions please feel free to contact me at ericnunez[at]gmail[.]com
