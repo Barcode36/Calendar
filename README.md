@@ -11,3 +11,6 @@ Appointments can be made while viewing any single month and double clicking on a
 
 ![alt text](https://github.com/Ericnunez/Calendar/blob/master/monthview.png?raw=true "month view screenshot")
 
+![alt text](https://github.com/Ericnunez/Calendar/blob/master/yearView.png?raw=true "year view screenshot")
+
+![alt text](https://github.com/Ericnunez/Calendar/blob/master/appView.png?raw=true "appointment view screenshot")
