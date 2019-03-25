@@ -98,7 +98,7 @@ public class Calendar extends Application
          currentYear.setText(yearMonthView.getYear() + "");
          GridPane previousPane = setupMonthPane(yearMonthView.getYear(),
                  yearMonthView.getMonthValue());
-         displayAppointments(previousPane);
+//         displayAppointments(previousPane);
          containerPane.setCenter(previousPane);
       });
 
@@ -108,7 +108,7 @@ public class Calendar extends Application
          currentYear.setText(yearMonthView.getYear() + "");
          GridPane nextPane = setupMonthPane(yearMonthView.getYear(),
                  yearMonthView.getMonthValue());
-         displayAppointments(nextPane);
+//         displayAppointments(nextPane);
          containerPane.setCenter(nextPane);
       });
 
@@ -128,7 +128,7 @@ public class Calendar extends Application
          currentYear.setText(date.getYear() + "");
          GridPane todayPane = setupMonthPane(yearMonthView.getYear(),
                  yearMonthView.getMonthValue());
-         displayAppointments(todayPane);
+//         displayAppointments(todayPane);
          containerPane.setCenter(todayPane);
       });
 
