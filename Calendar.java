@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.time.*;
 import java.util.*;
 
@@ -23,7 +24,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-
+import javafx.stage.StageStyle;
 
 
 public class Calendar extends Application
@@ -47,6 +48,9 @@ public class Calendar extends Application
    private int appointmentDay = 0;
    private boolean appointmentVisible = true;
 
+   private double xOffset = 0;
+   private double yOffset =0;
+
    @Override
    public void start(Stage primaryStage)
    {
@@ -55,6 +59,7 @@ public class Calendar extends Application
       setupTopPane();
       GridPane gp = setupMonthPane(date.getYear(), date.getMonthValue());
       containerPane.setCenter(gp);
+
         
       primaryStage.setTitle("Calendar");
       primaryStage.setMinWidth(1000);
@@ -98,7 +103,6 @@ public class Calendar extends Application
          currentYear.setText(yearMonthView.getYear() + "");
          GridPane previousPane = setupMonthPane(yearMonthView.getYear(),
                  yearMonthView.getMonthValue());
-//         displayAppointments(previousPane);
          containerPane.setCenter(previousPane);
       });
 
@@ -108,7 +112,6 @@ public class Calendar extends Application
          currentYear.setText(yearMonthView.getYear() + "");
          GridPane nextPane = setupMonthPane(yearMonthView.getYear(),
                  yearMonthView.getMonthValue());
-//         displayAppointments(nextPane);
          containerPane.setCenter(nextPane);
       });
 
@@ -128,7 +131,6 @@ public class Calendar extends Application
          currentYear.setText(date.getYear() + "");
          GridPane todayPane = setupMonthPane(yearMonthView.getYear(),
                  yearMonthView.getMonthValue());
-//         displayAppointments(todayPane);
          containerPane.setCenter(todayPane);
       });
 
@@ -375,6 +377,8 @@ public class Calendar extends Application
    {
       try(Scanner input = new Scanner(new File(appointmentFile))) {
 
+         if(!input.hasNext()) return; // if file is empty, dont do anything
+
          while (input.hasNextLine())
          {
             String[] arr = input.nextLine().split(",");
@@ -383,8 +387,8 @@ public class Calendar extends Application
             int year = Integer.parseInt(arr[1]);
             int month = Integer.valueOf(arr[2]);
             int day = Integer.parseInt(arr[3]);
-            int hour = Integer.parseInt(arr[4]);
-            int minute = Integer.parseInt(arr[5]);
+            String hour = arr[4];
+            String minute = arr[5];
 
             if(year == yearMonthView.getYear() && month == yearMonthView.getMonthValue())
             {
@@ -412,7 +416,8 @@ public class Calendar extends Application
                               {
                                  Text tempText = (Text) spNode;
                                  int temp = Integer.parseInt(tempText.getText());
-                                 if(temp == day && tempText.getFill() == Color.BLACK)
+                                 if(temp == day &&
+                                         (tempText.getFill() == Color.BLACK || tempText.getFill() == Color.WHITE))
                                  {
                                     Label label1 = new Label(hour + ":" + minute + " " + appTitle);
                                     label1.setStyle("-fx-text-fill: green");
@@ -448,13 +453,13 @@ public class Calendar extends Application
    public void storeAppointment(String title, int year, int month, int day, int hour, int minute)
    {
       try(FileWriter fileWriter = new FileWriter(appointmentFile, true)) {
-
+         DecimalFormat df = new DecimalFormat("00");
          fileWriter.write(title + ",");
          fileWriter.write(year + ",");
          fileWriter.write(month + ",");
          fileWriter.write(day + ",");
-         fileWriter.write(hour + ",");
-         fileWriter.write(minute + "\n");
+         fileWriter.write(df.format(hour) + ",");
+         fileWriter.write(df.format(minute) + "\n");
 
       }
       catch(FileNotFoundException e) {
