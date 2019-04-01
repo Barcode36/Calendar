@@ -24,7 +24,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 
 public class Calendar extends Application
@@ -48,9 +47,6 @@ public class Calendar extends Application
    private int appointmentDay = 0;
    private boolean appointmentVisible = true;
 
-   private double xOffset = 0;
-   private double yOffset =0;
-
    @Override
    public void start(Stage primaryStage)
    {
@@ -60,15 +56,11 @@ public class Calendar extends Application
       GridPane gp = setupMonthPane(date.getYear(), date.getMonthValue());
       containerPane.setCenter(gp);
 
-        
       primaryStage.setTitle("Calendar");
       primaryStage.setMinWidth(1000);
       primaryStage.setMinHeight(800);
       primaryStage.setScene(scene);
       primaryStage.show();
-
-        
-        
 
       appointmentScene = new Scene(appointmentPane, 350, 250);
       setupAppointmentPane();
@@ -437,7 +429,6 @@ public class Calendar extends Application
       catch (FileNotFoundException e) {
          e.printStackTrace();
       }
-
 
    }
 
